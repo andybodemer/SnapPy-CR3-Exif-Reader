@@ -10,6 +10,31 @@ CANON_CMT1_UUID = "85c0b687820f11e08111f4ce462b6a48"
 # Enable debug mode to see all raw tags
 DEBUG_MODE = False
 
+# TIFF5 Canon MakerNote Tags (decoded)
+TIFF5_CANON_TAGS = {
+    6: "CameraModel",           # Redundant with Model
+    7: "FirmwareVersion",
+    149: "LensModel",           # Redundant with LensModel
+    150: "LensManufacturingCode",
+}
+
+# Fields to include in output (whitelist)
+OUTPUT_FIELDS = {
+    # Camera & Date/Time
+    'Make', 'Model', 'DateTime', 'DateTimeOriginal', 'DateTimeDigitized',
+    # Lens Information
+    'LensModel', 'LensSpecification', 'LensSerialNumber', 'LensMake',
+    'FirmwareVersion', 'LensManufacturingCode',
+    # Exposure Settings
+    'ExposureTime', 'FNumber', 'ISOSpeedRatings', 'ShutterSpeedValue',
+    'ApertureValue', 'ExposureBiasValue', 'FocalLength', 'FocalLengthIn35mmFilm',
+    'ExposureProgram', 'ExposureMode', 'MeteringMode', 'WhiteBalance', 'Flash',
+    # Image Info
+    'ImageWidth', 'ImageLength', 'Orientation',
+    # Creator Info
+    'Artist', 'Copyright',
+}
+
 # TIFF Tag Reference (Expanded)
 TIFF_TAGS = {
     254: "NewSubfileType",
@@ -283,7 +308,11 @@ def extract_metadata(file_path):
                                     tag_id, tag_type, count = struct.unpack('<HHI', entry[0:8])
                                     value_data = entry[8:12]
 
-                                    tag_name = TIFF_TAGS.get(tag_id, f"UnknownTag_{tag_id}")
+                                    # Use TIFF5 Canon tags for TIFF5, otherwise standard TIFF tags
+                                    if tiff_num == 4:  # TIFF5 (0-indexed, so tiff_num 4 = TIFF5)
+                                        tag_name = TIFF5_CANON_TAGS.get(tag_id, TIFF_TAGS.get(tag_id, f"UnknownTag_{tag_id}"))
+                                    else:
+                                        tag_name = TIFF_TAGS.get(tag_id, f"UnknownTag_{tag_id}")
                                     prefix = f"TIFF{tiff_num+1}_" if tiff_num > 0 else ""
 
                                     if DEBUG_MODE:
@@ -429,7 +458,21 @@ def write_sidecar(cr3_path, metadata):
                 if key:
                     f.write(f"{field:30s}: {value}\n")
                     used_keys.add(key)
+            # Add LensManufacturingCode if present
+            key, value = find_field('LensManufacturingCode')
+            if key:
+                f.write(f"{'LensManufacturingCode':30s}: {value}\n")
+                used_keys.add(key)
             f.write("\n")
+
+            # Firmware info
+            key, value = find_field('FirmwareVersion')
+            if key:
+                f.write("FIRMWARE:\n")
+                f.write("-" * 60 + "\n")
+                f.write(f"{'FirmwareVersion':30s}: {value}\n")
+                used_keys.add(key)
+                f.write("\n")
 
             # Exposure settings
             f.write("EXPOSURE SETTINGS:\n")
@@ -445,13 +488,19 @@ def write_sidecar(cr3_path, metadata):
                     used_keys.add(key)
             f.write("\n")
 
-            # All other fields (exclude already used keys)
-            other_fields = {k: v for k, v in metadata.items() if k not in used_keys}
+            # Image dimensions and creator info
+            image_fields = ['ImageWidth', 'ImageLength', 'Orientation', 'Artist', 'Copyright']
+            other_found = []
+            for field in image_fields:
+                key, value = find_field(field)
+                if key and key not in used_keys:
+                    other_found.append((field, value))
+                    used_keys.add(key)
 
-            if other_fields:
-                f.write("OTHER METADATA:\n")
+            if other_found:
+                f.write("IMAGE & CREATOR INFO:\n")
                 f.write("-" * 60 + "\n")
-                for field, value in sorted(other_fields.items()):
+                for field, value in other_found:
                     f.write(f"{field:30s}: {value}\n")
 
         return sidecar_path
