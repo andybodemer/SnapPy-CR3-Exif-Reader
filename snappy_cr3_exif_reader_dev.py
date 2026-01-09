@@ -3,6 +3,8 @@ import os
 import binascii
 from datetime import datetime
 from pathlib import Path
+import tkinter as tk
+from tkinter import filedialog
 
 # --- CONSTANTS ---
 CANON_CMT1_UUID = "85c0b687820f11e08111f4ce462b6a48"
@@ -573,6 +575,46 @@ def batch_process_folder(folder_path):
     print("="*60)
     print(f"[COMPLETE] Processed {success_count}/{len(cr3_files)} files successfully\n")
 
+def select_file_or_folder():
+    """
+    Opens a tkinter dialog to select a CR3 file or folder.
+    Returns the selected path or None if cancelled.
+    """
+    # Create and hide the root window
+    root = tk.Tk()
+    root.withdraw()
+    root.attributes('-topmost', True)  # Bring dialog to front
+
+    print("\nSelect an option:")
+    print("  [1] Select a single CR3 file")
+    print("  [2] Select a folder of CR3 files")
+    print("  [3] Enter path manually")
+
+    choice = input("\nEnter choice (1/2/3): ").strip()
+
+    selected_path = None
+
+    if choice == '1':
+        selected_path = filedialog.askopenfilename(
+            title="Select CR3 File",
+            filetypes=[("CR3 Files", "*.cr3 *.CR3"), ("All Files", "*.*")]
+        )
+    elif choice == '2':
+        selected_path = filedialog.askdirectory(
+            title="Select Folder Containing CR3 Files"
+        )
+    elif choice == '3':
+        root.destroy()
+        return input("Enter CR3 file path OR folder path: ").strip()
+    else:
+        print("[ERROR] Invalid choice.")
+        root.destroy()
+        return None
+
+    root.destroy()
+    return selected_path if selected_path else None
+
+
 def main():
     """
     Main function: handles user input and routing.
@@ -583,10 +625,10 @@ def main():
     print("\nThis tool extracts metadata from Canon CR3 files and creates")
     print("human-readable sidecar text files.\n")
 
-    user_input = input("Enter CR3 file path OR folder path: ").strip()
+    user_input = select_file_or_folder()
 
     # Clean the input
-    cleaned_path = clean_user_input(user_input)
+    cleaned_path = clean_user_input(user_input) if user_input else None
 
     if not cleaned_path:
         print("[ERROR] No path provided.")
