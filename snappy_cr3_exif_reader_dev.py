@@ -434,11 +434,11 @@ def write_sidecar(cr3_path, metadata):
                 return None, None
 
             # Write metadata in organized sections
-            camera_lens_fields = ['Make', 'Model', 'DateTime', 'DateTimeOriginal', 'DateTimeDigitized',
-                                  'LensModel', 'LensSpecification']
+            camera_lens_fields = ['Make', 'Model', 'LensModel', 'LensSpecification']
             exposure_fields = ['ExposureTime', 'FNumber', 'ISOSpeedRatings', 'ShutterSpeedValue',
                              'ApertureValue', 'ExposureBiasValue', 'FocalLength', 'FocalLengthIn35mmFilm',
                              'ExposureProgram', 'ExposureMode', 'MeteringMode', 'WhiteBalance', 'Flash']
+            datetime_fields = ['DateTime', 'DateTimeOriginal', 'DateTimeDigitized']
             image_fields = ['ImageWidth', 'ImageLength', 'Orientation', 'Artist', 'Copyright']
             serial_fields = ['LensSerialNumber', 'LensManufacturingCode', 'FirmwareVersion']
 
@@ -467,6 +467,21 @@ def write_sidecar(cr3_path, metadata):
                         f.write(f"{field:30s}: {value}\n")
                     used_keys.add(key)
             f.write("\n")
+
+            # Date/Time info
+            datetime_found = []
+            for field in datetime_fields:
+                key, value = find_field(field)
+                if key and key not in used_keys:
+                    datetime_found.append((field, value))
+                    used_keys.add(key)
+
+            if datetime_found:
+                f.write("DATE & TIME:\n")
+                f.write("-" * 60 + "\n")
+                for field, value in datetime_found:
+                    f.write(f"{field:30s}: {value}\n")
+                f.write("\n")
 
             # Image dimensions and creator info
             image_found = []

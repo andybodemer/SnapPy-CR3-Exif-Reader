@@ -60,8 +60,6 @@ CAMERA & LENS:
 ------------------------------------------------------------
 Make                          : Canon
 Model                         : Canon EOS R5m2
-DateTime                      : 2026:01:09 10:27:52
-DateTimeOriginal              : 2026:01:09 10:27:52
 LensModel                     : EF85mm f/1.4L IS USM
 LensSpecification             : 85.0
 
@@ -71,6 +69,11 @@ ExposureTime                  : 1/125s (0.008000s)
 FNumber                       : 4.0
 ISOSpeedRatings               : 100
 FocalLength                   : 85.0
+
+DATE & TIME:
+------------------------------------------------------------
+DateTime                      : 2026:01:09 10:27:52
+DateTimeOriginal              : 2026:01:09 10:27:52
 
 IMAGE & CREATOR INFO:
 ------------------------------------------------------------
