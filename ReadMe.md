@@ -6,17 +6,17 @@ SnapPy CR3 Exif Reader provides Python tools to extract and parse EXIF metadata 
 
 ## Features
 
-- **Complete EXIF Extraction**: Reads camera model, lens info, exposure settings, ISO, shutter speed, aperture, focal length, and more
+- **EXIF Extraction**: Reads camera model, lens info, exposure settings, ISO, shutter speed, aperture, focal length, and more
 - **Multiple TIFF Structure Parsing**: Navigates through all TIFF structures within Canon's CMT1 UUID box
 - **Batch Processing**: Process single files or entire folders of CR3 images
 - **Human-Readable Output**: Generates organized sidecar text files with formatted metadata
-- **Robust Error Handling**: Validates TIFF structures and skips corrupt data
+- **Error Handling**: Validates TIFF structures and skips corrupt data
 - **No External Dependencies**: Uses only Python standard library (struct, os, binascii, pathlib, datetime)
 
 ## Scripts
 
 ### `snappy_cr3_exif_reader_dev.py`
-Main script for extracting metadata and creating sidecar files.
+Script for extracting metadata and creating sidecar files.
 
 **Features:**
 - Interactive file/folder path input with automatic path cleaning
@@ -100,14 +100,6 @@ The scripts support 60+ standard EXIF tags including:
 - **Lens tags**: LensModel, LensSpecification, LensMake, LensSerialNumber
 - **Shooting tags**: ExposureMode, MeteringMode, WhiteBalance, Flash, ColorSpace
 
-## Future Development
-
-This project can be extended to:
-- Export metadata to JSON, XML, or XMP sidecar formats
-- Parse Canon MakerNote tags for proprietary camera settings
-- Integrate as importable Python module for other applications
-- Add GPS coordinate extraction
-- Support for other Canon raw formats (CR2, CRW)
 
 ## Requirements
 
@@ -120,9 +112,6 @@ This project can be extended to:
 - Canon EOS R5 II CR3 files
 - macOS (Darwin 24.6.0)
 
-## License
-
-[Specify license here]
 
 ## Author
 
