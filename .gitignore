@@ -41,6 +41,11 @@ htmlcov/
 
 # Project specific
 *.cr3
+*.CR3
+# Exception: Allow test images
+!Test Images/*.CR3
+!Test Images/*.cr3
+
 *_metadata.txt
 test_files/
 samples/
