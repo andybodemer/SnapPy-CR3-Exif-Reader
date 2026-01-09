@@ -56,23 +56,14 @@ Source File: LPST1264.CR3
 Extracted: 2026-01-09 13:08:12
 ============================================================
 
-CAMERA & DATE/TIME:
+CAMERA & LENS:
 ------------------------------------------------------------
 Make                          : Canon
 Model                         : Canon EOS R5m2
 DateTime                      : 2026:01:09 10:27:52
 DateTimeOriginal              : 2026:01:09 10:27:52
-
-LENS INFORMATION:
-------------------------------------------------------------
 LensModel                     : EF85mm f/1.4L IS USM
 LensSpecification             : 85.0
-LensSerialNumber              : 3220000174
-LensManufacturingCode         : UQ0060491
-
-FIRMWARE:
-------------------------------------------------------------
-FirmwareVersion               : Firmware Version 1.1.1
 
 EXPOSURE SETTINGS:
 ------------------------------------------------------------
@@ -87,6 +78,12 @@ ImageWidth                    : 8192
 ImageLength                   : 5464
 Artist                        : Andreas Bodemer
 Copyright                     : Andreas Bodemer
+
+SERIAL NUMBERS & FIRMWARE:
+------------------------------------------------------------
+LensSerialNumber              : 3220000174
+LensManufacturingCode         : UQ0060491
+FirmwareVersion               : Firmware Version 1.1.1
 ```
 
 ## Technical Details

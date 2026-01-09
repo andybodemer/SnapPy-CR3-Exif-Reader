@@ -434,47 +434,25 @@ def write_sidecar(cr3_path, metadata):
                 return None, None
 
             # Write metadata in organized sections
-            priority_fields = ['Make', 'Model', 'DateTime', 'DateTimeOriginal', 'DateTimeDigitized']
-            camera_fields = ['Software', 'LensMake', 'LensModel', 'LensSpecification', 'LensSerialNumber']
+            camera_lens_fields = ['Make', 'Model', 'DateTime', 'DateTimeOriginal', 'DateTimeDigitized',
+                                  'LensModel', 'LensSpecification']
             exposure_fields = ['ExposureTime', 'FNumber', 'ISOSpeedRatings', 'ShutterSpeedValue',
                              'ApertureValue', 'ExposureBiasValue', 'FocalLength', 'FocalLengthIn35mmFilm',
                              'ExposureProgram', 'ExposureMode', 'MeteringMode', 'WhiteBalance', 'Flash']
+            image_fields = ['ImageWidth', 'ImageLength', 'Orientation', 'Artist', 'Copyright']
+            serial_fields = ['LensSerialNumber', 'LensManufacturingCode', 'FirmwareVersion']
 
             used_keys = set()
 
-            # Priority metadata
-            f.write("CAMERA & DATE/TIME:\n")
-            f.write("-" * 60 + "\n")
-            for field in priority_fields:
-                key, value = find_field(field)
-                if key:
-                    f.write(f"{field:30s}: {value}\n")
-                    used_keys.add(key)
-            f.write("\n")
-
             # Camera & Lens info
-            f.write("LENS INFORMATION:\n")
+            f.write("CAMERA & LENS:\n")
             f.write("-" * 60 + "\n")
-            for field in camera_fields:
+            for field in camera_lens_fields:
                 key, value = find_field(field)
                 if key:
                     f.write(f"{field:30s}: {value}\n")
                     used_keys.add(key)
-            # Add LensManufacturingCode if present
-            key, value = find_field('LensManufacturingCode')
-            if key:
-                f.write(f"{'LensManufacturingCode':30s}: {value}\n")
-                used_keys.add(key)
             f.write("\n")
-
-            # Firmware info
-            key, value = find_field('FirmwareVersion')
-            if key:
-                f.write("FIRMWARE:\n")
-                f.write("-" * 60 + "\n")
-                f.write(f"{'FirmwareVersion':30s}: {value}\n")
-                used_keys.add(key)
-                f.write("\n")
 
             # Exposure settings
             f.write("EXPOSURE SETTINGS:\n")
@@ -491,18 +469,32 @@ def write_sidecar(cr3_path, metadata):
             f.write("\n")
 
             # Image dimensions and creator info
-            image_fields = ['ImageWidth', 'ImageLength', 'Orientation', 'Artist', 'Copyright']
-            other_found = []
+            image_found = []
             for field in image_fields:
                 key, value = find_field(field)
                 if key and key not in used_keys:
-                    other_found.append((field, value))
+                    image_found.append((field, value))
                     used_keys.add(key)
 
-            if other_found:
+            if image_found:
                 f.write("IMAGE & CREATOR INFO:\n")
                 f.write("-" * 60 + "\n")
-                for field, value in other_found:
+                for field, value in image_found:
+                    f.write(f"{field:30s}: {value}\n")
+                f.write("\n")
+
+            # Serial numbers and firmware (bottom section)
+            serial_found = []
+            for field in serial_fields:
+                key, value = find_field(field)
+                if key and key not in used_keys:
+                    serial_found.append((field, value))
+                    used_keys.add(key)
+
+            if serial_found:
+                f.write("SERIAL NUMBERS & FIRMWARE:\n")
+                f.write("-" * 60 + "\n")
+                for field, value in serial_found:
                     f.write(f"{field:30s}: {value}\n")
 
         return sidecar_path
